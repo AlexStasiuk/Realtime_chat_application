@@ -4,14 +4,15 @@ class SessionsController < ApplicationController
   end
   def create #handles post request on login path
     user = User.find_by(username: params[:session][:username])
-    if user && user.authenticate(params[:session][:password])
-      session[:user_id] = user.id
-      flash[:success] = "Succesfuly login in"
-      redirect_to root_path
-    else
+    isAuthenticated = user && user.authenticate(params[:session][:password])
+    if !isAuthenticated
       flash[:alarm] = "Wrong credentials"
       redirect_to login_path
+      return
     end
+    session[:user_id] = user.id
+    flash[:success] = "Succesfuly login in"
+    redirect_to root_path
   end
   
   def destroy
